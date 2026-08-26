@@ -1,69 +1,60 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { Check, Clock, CurrencyDollar, Tag } from "@phosphor-icons/react/dist/ssr";
+import { StructuredData } from "@/components/StructuredData";
+import { homeSellingPoints, homeServices, mediaRoot, occasions, pageSeo, productList } from "@/content/site";
+import { createMetadata, pageJsonLd } from "@/lib/seo";
 
-export default function Home() {
+export const metadata: Metadata = createMetadata(pageSeo.home);
+const pointIcons = { clock: Clock, tag: Tag, money: CurrencyDollar };
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <StructuredData data={pageJsonLd(pageSeo.home)} />
+      <section className="home-hero">
+        <Image src={`${mediaRoot}/03/T-Shirt-Printing-in-Bakersfield.jpg`} alt="VZN Prints custom apparel printing" fill priority sizes="100vw" className="home-hero__image" />
+        <div className="home-hero__overlay" />
+        <div className="home-hero__content section-shell">
+          <h1>Your Ultimate Printing Services Solution</h1>
+          <h2>Printing company in Bakersfield, CA</h2>
+          <p>Marketing Solutions | Promotional Items | &amp; More!</p>
+          <Link href="/quote/" className="button button--blue" data-ga-event="quote_cta">Get a Quote</Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="selling-points" aria-label="Why choose VZN Prints">
+        <div className="section-shell selling-points__grid">
+          {homeSellingPoints.map((point) => {
+            const Icon = pointIcons[point.icon];
+            return <article key={point.title}><Icon size={46} weight="thin" aria-hidden="true" /><div><h2>{point.title}</h2><p>{point.detail}</p></div></article>;
+          })}
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="services-grid" aria-label="Printing services">
+        {homeServices.map((service) => (
+          <article className="service-card" key={service.title}>
+            <Image src={service.image} alt={`${service.title} service from VZN Prints`} fill sizes="(max-width: 980px) 100vw, 50vw" />
+            <div className="service-card__overlay" />
+            <div className="service-card__content"><h2><Link href={service.href}>{service.title}</Link></h2><p>{service.description}</p><Link href={service.href} className="text-link">Learn More</Link></div>
+          </article>
+        ))}
+      </section>
+
+      <section className="new-you section-pad">
+        <div className="section-shell new-you__grid">
+          <div><p className="eyebrow">Give Your Business a New Look</p><h2>Say Hello to <span>THE NEW YOU</span></h2><p>VZN Prints is the print shop in Bakersfield of choice when it comes to your printing needs. Our products remain top-quality and are made to look retail ready. Bakersfield printing is now easy and affordable!</p></div>
+          <div className="product-list">{productList.map((product) => <p key={product}><Check size={22} weight="bold" aria-hidden="true" />{product}</p>)}</div>
+        </div>
+      </section>
+
+      <section className="occasions section-pad"><div className="section-shell"><h2 className="section-title">We Print For All Occasions</h2><div className="occasions__grid">
+        {occasions.map((occasion, index) => <article key={occasion.title} className={`occasion occasion--${index + 1}`}><span className="occasion__number">0{index + 1}</span><h3>{occasion.title}</h3><p>{occasion.description}</p></article>)}
+      </div></div></section>
+
+      <section className="clients section-pad"><div className="section-shell clients__grid"><div><p className="eyebrow">Our</p><h2>Clients</h2><p>Our Bakersfield printing services are second-to-none. We’ve worked with sports teams, medical offices, restaurants, and all sorts of other business’.</p></div><div className="clients__art"><Image src={`${mediaRoot}/03/Untitled-design.png`} alt="Businesses and organizations served by VZN Prints" fill sizes="(max-width: 767px) 100vw, 55vw" /></div></div></section>
+    </>
   );
 }
