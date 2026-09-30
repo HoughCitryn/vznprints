@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check, Clock, CurrencyDollar, Tag } from "@phosphor-icons/react/dist/ssr";
 import { StructuredData } from "@/components/StructuredData";
-import { homeSellingPoints, homeServices, mediaRoot, occasions, pageSeo, productList } from "@/content/site";
+import { homeSellingPoints, homeServices, mediaRoot, occasions, pageSeo, productList, recommendedBrands } from "@/content/site";
 import { createMetadata, pageJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = createMetadata(pageSeo.home);
@@ -14,7 +14,7 @@ export default function HomePage() {
     <>
       <StructuredData data={pageJsonLd(pageSeo.home)} />
       <section className="home-hero">
-        <Image src={`${mediaRoot}/03/T-Shirt-Printing-in-Bakersfield.jpg`} alt="VZN Prints custom apparel printing" fill priority sizes="100vw" className="home-hero__image" />
+        <Image src={`${mediaRoot}/02/T-Shirt-Printing-Bakersfield-CA.jpg`} alt="VZN Prints custom apparel printing" fill priority sizes="100vw" className="home-hero__image" />
         <div className="home-hero__overlay" />
         <div className="home-hero__content section-shell">
           <h1>Your Ultimate Printing Services Solution</h1>
@@ -53,6 +53,19 @@ export default function HomePage() {
       <section className="occasions section-pad"><div className="section-shell"><h2 className="section-title">We Print For All Occasions</h2><div className="occasions__grid">
         {occasions.map((occasion, index) => <article key={occasion.title} className={`occasion occasion--${index + 1}`}><span className="occasion__number">0{index + 1}</span><h3>{occasion.title}</h3><p>{occasion.description}</p></article>)}
       </div></div></section>
+
+      <section className="recommended-brands section-pad" aria-labelledby="recommended-brands-title">
+        <div className="section-shell">
+          <h2 id="recommended-brands-title" className="section-title">BRANDS WE RECOMMEND</h2>
+          <ul className="recommended-brands__grid">
+            {recommendedBrands.map((brand) => (
+              <li key={brand.name}>
+                <Image src={brand.src} alt={brand.name} width={brand.width} height={brand.height} sizes="(max-width: 767px) 40vw, 240px" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <section className="clients section-pad"><div className="section-shell clients__grid"><div><p className="eyebrow">Our</p><h2>Clients</h2><p>Our Bakersfield printing services are second-to-none. We’ve worked with sports teams, medical offices, restaurants, and all sorts of other business’.</p></div><div className="clients__art"><Image src={`${mediaRoot}/03/Untitled-design.png`} alt="Businesses and organizations served by VZN Prints" fill sizes="(max-width: 767px) 100vw, 55vw" /></div></div></section>
     </>

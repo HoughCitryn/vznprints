@@ -6,7 +6,7 @@ export const mediaRoot = "/wp-content/uploads/2019";
 
 export const siteConfig: SiteConfig = {
   name: "VZN Prints",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://vznprints.com",
+  url: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://vznprints.com").origin,
   phone: "+16615463113",
   phoneDisplay: "661-546-3113",
   email: "contact@vznprints.com",
@@ -75,7 +75,7 @@ export const homeServices = [
     description:
       "View the type of items that we can print and customize. T-Shirt printing in Bakersfield is now affordable and fast! Tees, hats, jackets and more.",
     href: "/apparel/",
-    image: `${mediaRoot}/02/T-Shirt-Printing-Bakersfield-CA.jpg`,
+    image: `${mediaRoot}/03/T-Shirt-Printing-in-Bakersfield.jpg`,
   },
   {
     title: "Marketing Material",
@@ -107,6 +107,13 @@ export const productList = [
   "Pens | Mugs | Folders | Bags | Posters | Stand-Up Signs",
 ] as const;
 
+export const recommendedBrands = [
+  { name: "BELLA+CANVAS", src: `${mediaRoot}/02/bella2.png`, width: 450, height: 300 },
+  { name: "American Apparel", src: `${mediaRoot}/02/aa.png`, width: 450, height: 300 },
+  { name: "ei-lo", src: `${mediaRoot}/02/logo-ei-lo.png`, width: 462, height: 174 },
+  { name: "Anvil", src: `${mediaRoot}/02/Anvil.png`, width: 751, height: 192 },
+] as const;
+
 export const occasions = [
   {
     title: "Fundraisers & Events",
@@ -130,19 +137,19 @@ export const printMethods = [
     title: "Heat Transfer Vinyl",
     image: `${mediaRoot}/02/T-Shirt-Printing-Bakersfield-CA.jpg`,
     description:
-      "Heat Transfer Vinyl (HTV) is a great long-lasting option for printing on t-shirts of all types. Our personal favorite method of t-shirt printing, White Toner has full-color capability in multiple finishes. If you are looking for this type of T-shirt printing in Bakersfield, then contact us today for a quote!",
+      "Heat Transfer Vinyl (HTV) is a great long-lasting option for printing on t-shirts of all types. Our personal favorite method of t-shirt printing, White Toner has full-color capability in multiple finishes. If you are looking for this type of T-shirt printing in Bakersfield, then contact us today for a ",
   },
   {
     title: "Embroidery",
     image: `${mediaRoot}/02/Embroidery-Bakersfield-CA.jpg`,
     description:
-      "Looking to embroider a hat or polo? Maybe even a jacket or bag? We provide embroidery options to our customers on a variety of different items. Contact us today for more information regarding your project. If you are looking for Embroidery services in Bakersfield, then contact us today for a quote!",
+      "Looking to embroider a hat or polo? Maybe even a jacket or bag? We provide embroidery options to our customers on a variety of different items. Contact us today for more information regarding your project. If you are looking for Embroidery services in Bakersfield, then contact us today for a ",
   },
   {
     title: "Screen Print",
     image: `${mediaRoot}/02/okay-min.jpg`,
     description:
-      "Screen Printing t-shirts is a generic method of printing and can be found to be inexpensive when purchased in bulk amounts such as fundraisers and large events. We offer multi-color print on a range of different materials. If you are looking for screen printing in Bakersfield, then contact us today for a quote!",
+      "Screen Printing t-shirts is a generic method of printing and can be found to be inexpensive when purchased in bulk amounts such as fundraisers and large events. We offer multi-color print on a range of different materials. If you are looking for screen printing in Bakersfield, then contact us today for a ",
   },
 ] as const;
 
@@ -216,24 +223,25 @@ export const artworkExamples = [
 
 export const visiblePageImages = {
   home: [
-    `${mediaRoot}/03/T-Shirt-Printing-in-Bakersfield.jpg`,
+    `${mediaRoot}/02/T-Shirt-Printing-Bakersfield-CA.jpg`,
     ...homeServices.map((service) => service.image),
+    ...recommendedBrands.map((brand) => brand.src),
     `${mediaRoot}/03/Untitled-design.png`,
   ],
   apparel: [
+    `${mediaRoot}/03/Webp.net-resizeimage-1-min.jpg`,
     ...printMethods.map((method) => method.image),
     ...garments.map((garment) => garment.src),
     ...fabrics.map((fabric) => fabric.src),
   ],
   marketing: [
     `${mediaRoot}/02/Business-Card-Printing-Bakersfield-CA.jpg`,
-    `${mediaRoot}/02/black-and-white-lights-abstract-curves.jpg`,
   ],
   graphicDesign: [
     `${mediaRoot}/02/life-coach-26.jpg`,
     ...artworkExamples.map((example) => example.src),
   ],
-  contact: [`${mediaRoot}/03/golf_course_40.png`],
+  contact: [`${mediaRoot}/02/black-and-white-lights-abstract-curves.jpg`],
   quote: [`${mediaRoot}/02/black-and-white-lights-abstract-curves.jpg`],
 } as const;
 

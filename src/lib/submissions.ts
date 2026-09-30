@@ -1,5 +1,5 @@
-import { Resend } from "resend";
 import type { ContactSubmission, QuoteSubmission } from "@/lib/forms";
+import { sendWebsiteEmail } from "@/lib/mail";
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"]|'/g, (character) => {
@@ -33,20 +33,8 @@ export async function verifyTurnstile(token: string, ip?: string | null) {
   return result.success === true;
 }
 
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
-  return new Resend(apiKey);
-}
-
-const emailConfig = () => ({
-  from: process.env.RESEND_FROM_EMAIL ?? "VZN Prints Website <website@vznprints.com>",
-  to: process.env.CONTACT_TO_EMAIL ?? "contact@vznprints.com",
-});
-
 export async function sendContactEmail(submission: ContactSubmission) {
-  const { data, error } = await getResend().emails.send({
-    ...emailConfig(),
+  return sendWebsiteEmail({
     replyTo: submission.email,
     subject: `Website message from ${submission.name}`,
     html: `<h1>New website message</h1>
@@ -56,13 +44,10 @@ export async function sendContactEmail(submission: ContactSubmission) {
       <p><strong>Message:</strong></p>
       <p>${escapeHtml(submission.message).replace(/\n/g, "<br>")}</p>`,
   });
-  if (error || !data) throw new Error(error?.message ?? "Contact delivery failed.");
-  return data;
 }
 
 export async function sendQuoteEmail(submission: QuoteSubmission) {
-  const { data, error } = await getResend().emails.send({
-    ...emailConfig(),
+  return sendWebsiteEmail({
     replyTo: submission.email,
     subject: `Quote request: ${submission.service} from ${submission.name}`,
     html: `<h1>New quote request</h1>
@@ -76,6 +61,4 @@ export async function sendQuoteEmail(submission: QuoteSubmission) {
       <p><strong>Project details:</strong></p>
       <p>${escapeHtml(submission.projectDetails).replace(/\n/g, "<br>")}</p>`,
   });
-  if (error || !data) throw new Error(error?.message ?? "Quote delivery failed.");
-  return data;
 }

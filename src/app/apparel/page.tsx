@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { StructuredData } from "@/components/StructuredData";
 import { fabrics, garments, mediaRoot, pageSeo, printMethods } from "@/content/site";
@@ -11,10 +12,10 @@ export default function ApparelPage() {
   return (
     <>
       <StructuredData data={pageJsonLd(pageSeo.apparel, "Apparel Printing and Embroidery")} />
-      <PageHero title="Apparel Printing" subtitle="T-Shirts | Long Sleeve | Hoodies | Hats | Polos | Sportswear | Jerseys | Scrubs" image={`${mediaRoot}/02/Webp.net-resizeimage-min.jpg`} />
+      <PageHero title="Apparel Printing" subtitle="T-Shirts | Long Sleeve | Hoodies | Hats | Polos | Sportswear | Jerseys | Scrubs" image={`${mediaRoot}/03/Webp.net-resizeimage-1-min.jpg`} />
 
       <section className="section-pad print-methods"><div className="section-shell"><h2 className="section-title">Types Of Prints:</h2><div className="method-grid">
-        {printMethods.map((method) => <article className="method-card" key={method.title}><div className="method-card__image"><Image src={method.image} alt={`${method.title} apparel printing`} fill sizes="(max-width: 767px) 100vw, 33vw" /></div><div className="method-card__body"><h3>{method.title}</h3><p>{method.description}</p></div></article>)}
+        {printMethods.map((method) => <article className="method-card" key={method.title}><div className="method-card__image"><Image src={method.image} alt={`${method.title} apparel printing`} fill sizes="(max-width: 767px) 100vw, 33vw" /></div><div className="method-card__body"><h3>{method.title}</h3><p>{method.description}<Link href="/quote/" data-ga-event="quote_cta">quote</Link>!</p></div></article>)}
       </div></div></section>
 
       <section className="garment-section section-pad"><div className="section-shell"><h2 className="section-title">Types Of Garments:</h2><div className="garment-grid">

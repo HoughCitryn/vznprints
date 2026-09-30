@@ -11,8 +11,19 @@ export default function QuotePage() {
   return (
     <>
       <StructuredData data={pageJsonLd(pageSeo.quote, "Printing Quote")} />
-      <PageHero title="Request A Quote" subtitle="Tell us about your project" image={`${mediaRoot}/02/black-and-white-lights-abstract-curves.jpg`} compact showQuote={false} />
-      <section className="quote-section section-pad"><div className="section-shell quote-grid"><div><p className="eyebrow">Your Project Starts Here</p><h2>Get a Printing Quote</h2><p>Share your project details and we’ll follow up with the right options for your budget and timeline.</p><ul><li>Apparel printing and embroidery</li><li>Banners and marketing material</li><li>Graphic design and artwork recreation</li></ul></div><LeadForm type="quote" /></div></section>
+      <PageHero title="LET’S GET YOU A QUOTE!" image={`${mediaRoot}/02/black-and-white-lights-abstract-curves.jpg`} compact showQuote={false} />
+      <section className="quote-section section-pad">
+        <div className="section-shell quote-grid">
+          <div className="quote-intro">
+            <h2>Request A Quote</h2>
+            <p>Fill out the form below to receive an honest and accurate quote within 24 Hours. Quotes received on Weekends will be sent on Monday.</p>
+          </div>
+          <section aria-labelledby="quote-details-title">
+            <h3 id="quote-details-title">Project Details</h3>
+            <LeadForm type="quote" />
+          </section>
+        </div>
+      </section>
     </>
   );
 }

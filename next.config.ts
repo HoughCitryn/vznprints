@@ -50,6 +50,11 @@ const nextConfig: NextConfig = {
 
     return [
       {
+        source: "/favicon.ico",
+        destination: "/wp-content/uploads/2019/02/cropped-Favicon3-1.png",
+        permanent: true,
+      },
+      {
         source: "/:path*",
         has: [{ type: "host", value: "www.vznprints.com" }],
         destination: "https://vznprints.com/:path*",

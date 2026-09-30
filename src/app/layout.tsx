@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: { default: "VZN Prints | Print Shop in Bakersfield, CA", template: "%s" },
   description: "VZN Prints is your one stop print shop in Bakersfield.",
   icons: {
-    icon: "/wp-content/uploads/2019/02/Favicon3.png",
+    icon: "/wp-content/uploads/2019/02/cropped-Favicon3-1.png",
     apple: "/wp-content/uploads/2019/02/cropped-Favicon3-1.png",
   },
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
