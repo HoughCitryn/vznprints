@@ -9,7 +9,6 @@ export default function OpenGraphImage() {
   return new ImageResponse(
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#ffffff", padding: "72px 86px", color: "#050505", fontFamily: "Arial, sans-serif" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`${siteConfig.url}/wp-content/uploads/2019/02/VZN-LOGO.png`} alt="" width={300} height={143} style={{ objectFit: "contain" }} />
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>

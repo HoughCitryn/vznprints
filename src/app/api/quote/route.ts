@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { quoteSchema, type SubmissionResponse } from "@/lib/forms";
 import { sendQuoteEmail, verifyTurnstile } from "@/lib/submissions";
 
+export const runtime = "nodejs";
+// Allow both the 10-second verification and 15-second mail request to finish.
+export const maxDuration = 30;
+
 export async function POST(request: Request) {
   let payload: unknown;
   try {
