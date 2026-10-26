@@ -112,6 +112,22 @@ After cutover, test both real forms, submit `/sitemap.xml` and `/image-sitemap.x
 
 Pre-deployment audit on October 26, 2026 passed from a fresh temporary copy with no existing dependencies or Next.js build output: frozen-lockfile installation, all 54 tests, TypeScript, ESLint without warnings, production build, and the full HTTP route/SEO audit. The built function limits, canonical host redirect, and form validation were checked against the running production server. SMTP.com authentication and sender-domain checks passed; the real Turnstile secret rejected an invalid token as expected. Configured private credentials were absent from browser-delivered output. No additional email was sent during this audit. The actual Vercel build and real-domain checks remain deployment steps.
 
+### Vercel release — October 26, 2026
+
+Published the verified application from commit `a8421f7` to the **Citryn Marketing's projects** team. The production build is Ready and publicly serves [vznprints.vercel.app](https://vznprints.vercel.app). [Deployment details](https://vercel.com/citryn-marketings-projects/vznprints/qYMBPJjCkQBa7MSbUjUsZmToiXaL). All ten production environment variables are configured; the API key and Turnstile secret are stored as secrets. Google Analytics remains disabled. The full route/SEO audit also passed against the public deployment.
+
+Both `vznprints.com` and `www.vznprints.com` are attached to the project. DNS still points to the previous Bluehost server (`162.241.134.16`), so the custom-domain cutover is pending. Vercel currently requests these website records in the existing Bluehost DNS zone:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| A | `@` | `216.150.1.1` |
+| A | `@` | `216.150.16.1` |
+| CNAME | `www` | `0adb0bcc2c78806d.vercel-dns-016.com` |
+
+Replace conflicting website A/CNAME records, while preserving Bluehost nameservers, Google Workspace MX records, and unrelated TXT/mail records. Re-check the current recommended records in [Vercel Domains](https://vercel.com/citryn-marketings-projects/vznprints/settings/domains) before changing DNS. Turnstile is authorized for the custom domain; the temporary `vercel.app` hostname needs separate widget authorization for successful form submissions.
+
+GitHub automatic deployments are not connected: Vercel rejected access to `HoughCitryn/vznprints`, although the source changes were pushed successfully. This release used the Vercel CLI. Once the Vercel GitHub integration has access to that repository, run `pnpm dlx vercel git connect --yes --scope citryn-marketings-projects`. Until then, publish new releases with `pnpm dlx vercel deploy --prod --scope citryn-marketings-projects`.
+
 ## Configuration check — 2026-10-22
 
 - Moved the provided SMTP values out of the tracked template and into ignored `.env.local`. The initial implementation incorrectly treated `SMTP_API` as an SMTP password and received status 535; the October 26 API integration below replaces that mapping.
