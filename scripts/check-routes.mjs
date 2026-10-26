@@ -1,6 +1,9 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { JSDOM } from "jsdom";
+import nextEnv from "@next/env";
+
+nextEnv.loadEnvConfig(process.cwd(), false);
 
 const baseUrl = process.env.ROUTE_CHECK_BASE_URL ?? "http://localhost:3000";
 const siteUrl = new URL(process.env.ROUTE_CHECK_SITE_URL ?? "https://vznprints.com").origin;
@@ -68,6 +71,10 @@ for (const pageRoute of routes.slice(0, 6)) {
     previousLevel = level;
   }
   const canonical = document.querySelector('link[rel="canonical"]')?.href;
+  const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+  if (verification && document.querySelector('meta[name="google-site-verification"]')?.content !== verification) {
+    failures.push(`${pageRoute}: missing or incorrect Search Console verification tag`);
+  }
   if (canonical !== new URL(pageRoute, siteUrl).href) failures.push(`${pageRoute}: incorrect canonical ${canonical}`);
   if (/noindex/.test(document.querySelector('meta[name="robots"]')?.content ?? "")) failures.push(`${pageRoute}: unexpectedly noindex`);
   for (const selector of ['meta[property="og:title"]', 'meta[property="og:description"]', 'meta[property="og:image"]', 'meta[name="twitter:card"]']) {

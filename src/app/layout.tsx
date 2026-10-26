@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     icon: "/wp-content/uploads/2019/02/cropped-Favicon3-1.png",
     apple: "/wp-content/uploads/2019/02/cropped-Favicon3-1.png",
   },
-  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
+  verification: process.env.GOOGLE_SITE_VERIFICATION?.trim() ? { google: process.env.GOOGLE_SITE_VERIFICATION.trim() } : undefined,
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff" };
@@ -36,7 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <main id="main-content">{children}</main>
         <SiteFooter />
-        <AnalyticsConsent />
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ? <AnalyticsConsent /> : null}
       </body>
     </html>
   );

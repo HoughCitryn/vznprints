@@ -4,15 +4,15 @@ Next.js App Router rebuild of the VZN Prints website. The site is code-managed a
 
 ## Local development
 
-Requires Node.js 20+ and pnpm.
+Use Node.js 24.15+ (Node 24 is pinned in `.nvmrc`) and pnpm. The installed jsdom test tooling does not support Node 20.
 
 ```bash
 pnpm install
-Copy-Item .env.example .env.local
+cp .env.example .env.local
 pnpm dev
 ```
 
-Without a Turnstile site key, local development forms use a development verification token. Email delivery requires SMTP credentials or a valid Resend API key. Production verification never accepts the development bypass.
+For local development, use Cloudflare's public test keys in ignored `.env.development.local`; this keeps the production widget restricted to the live domain. Without a Turnstile site key, local development forms use a development verification token. Email delivery requires SMTP credentials or a valid Resend API key. Production verification never accepts the development bypass.
 
 ## Environment variables
 
@@ -20,25 +20,30 @@ Copy `.env.example` and configure:
 
 - `NEXT_PUBLIC_SITE_URL`: canonical production origin, normally `https://vznprints.com`.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`: required for Cloudflare Turnstile widget and server verification in production. Configure the widget for the deployment hostname. Rebuild when changing a `NEXT_PUBLIC_` value.
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_EMAIL`: SMTP delivery for both the contact and quote forms. Use a sender address authorized by your mail provider. Keep these server-only; never prefix credentials with `NEXT_PUBLIC_`.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_EMAIL`: SMTP delivery for both the contact and quote forms. `SMTP_API` is also accepted as a password alias when `SMTP_PASS` is empty. Use a sender address authorized by your mail provider. Keep these server-only; never prefix credentials with `NEXT_PUBLIC_`.
 - `CONTACT_TO_EMAIL`: destination inbox for both forms, defaulting to `contact@vznprints.com`. The visitor's email is set as Reply-To.
 - `RESEND_API_KEY` and `RESEND_FROM_EMAIL`: optional alternative when `SMTP_HOST` is empty. Verify the sending domain in Resend before launch.
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID`: GA4 measurement ID. GA4 loads only after cookie acceptance.
-- `GOOGLE_SITE_VERIFICATION`: Search Console verification token.
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`: optional GA4 measurement ID. Leave blank for VZN Prints; Google Analytics is not required. If enabled later, GA4 loads only after cookie acceptance.
+- `GOOGLE_SITE_VERIFICATION`: public Search Console verification token. The template preserves the token found on the existing live VZN Prints site; retain it during deployment.
 
 For SMTP on port 587, use `SMTP_SECURE=false` (STARTTLS is required). For port 465, use `SMTP_SECURE=true` (TLS from connection start). If `SMTP_SECURE` is blank, port 465 selects TLS automatically. SMTP takes precedence when `SMTP_HOST` is populated; configuration or delivery errors are surfaced as form errors instead of retrying through another provider.
 
 `.env.example` contains the configuration template; `.env.local` is ignored by Git. Fill in credentials locally or in the deployment provider's environment settings. Empty placeholders do not enable email delivery. No real message was sent during the audit; mail tests mock the providers.
 
+Next.js does not load `.env.example`. Save actual settings in `.env.local` and add the same settings to the deployment environment before rebuilding. Do not commit credentials. Production forms require both real Turnstile keys; missing keys leave submission unavailable and show the phone/email contact fallback. Failed submissions preserve the entered fields and obtain a fresh, single-use verification token before retrying.
+
 ## Verification
 
 ```bash
 pnpm verify
+pnpm check:launch --smtp
 pnpm start
 pnpm check:routes
 ```
 
 `check:routes` expects the production server on `http://localhost:3000`. Set `ROUTE_CHECK_BASE_URL` to check another origin, and `ROUTE_CHECK_SITE_URL` if the expected canonical origin differs from `https://vznprints.com`. It checks unique titles and descriptions, a single H1 and ordered H2/H3 headings inside each page's main content, canonical URLs, social metadata, JSON-LD syntax, alt attributes, both XML sitemaps, robots.txt, internal links, the social image, archived assets, and static redirects from the production build.
+
+`check:launch` checks the production environment without printing secrets. `--smtp` also verifies the SMTP connection, TLS, and login without sending mail. SMTP status 535 means the provider rejected the credentials. A successful login does not prove sender authorization or inbox delivery; confirm both with clearly labeled contact and quote submissions after configuration is complete. Google Analytics remains optional. `check:routes` also checks the rendered Search Console verification tag when configured.
 
 ## Live-site comparison and SEO audit — 2026-09-30
 
@@ -79,3 +84,12 @@ Reference for sitemap timestamps: [Google's sitemap guidance](https://developers
 Deploy to Vercel with pnpm as the package manager, add all production environment variables, and verify the preview before changing DNS. Vercel provides HTTP-to-HTTPS enforcement; the application redirects the `www` host to the canonical apex domain.
 
 After cutover, test both real forms, submit `/sitemap.xml` and `/image-sitemap.xml` in Search Console, and monitor 404s and canonical selection.
+
+## Configuration check — 2026-10-22
+
+- Moved the provided SMTP values out of the tracked template and into ignored `.env.local`, mapping `SMTP_API` to `SMTP_PASS`. Both names are supported by the mailer. The provider accepts TLS connections but rejects authentication with status 535 for both PLAIN and LOGIN. Correct the provider credentials before live delivery testing; no real email has been sent.
+- Created the **VZN Prints** Turnstile widget in the existing Cloudflare account, using Managed mode and the `vznprints.com` hostname (which includes its subdomains). Production `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are stored in ignored `.env.local`. Add these same values to the hosting environment before rebuilding and deploying. Local development uses Cloudflare's official public test keys in ignored `.env.development.local`; do not copy that file's values into production. The real secret was checked against Siteverify with an intentionally invalid response token: the endpoint returned `invalid-input-response`, not an invalid-secret error. A real successful production challenge still needs verification on the deployed domain.
+- Google Analytics remains disabled, as requested. No GA4 property was created.
+- Added and verified the `https://vznprints.com/` Search Console property under the existing Citryn Marketing owner account. Retained the old HTTP property and existing public HTML verification token. Submitted `https://vznprints.com/sitemap.xml`; Search Console reported “Sitemap index processed successfully.” Indexing and performance data require subsequent Google processing.
+- The live domain still serves the old WordPress site. Its sitemap index includes its image sitemap. The rebuilt `/image-sitemap.xml` endpoint must be submitted only after deployment; it currently returns 404 on the old site.
+- Local checks passed: 38 tests, TypeScript, production build, and the HTTP SEO audit covering 10 routes, 38 archived assets, and 45 redirects. ESLint reports one existing unused-disable warning in `opengraph-image.tsx`. Form tests use mocked mail delivery; production requests reject the development CAPTCHA bypass.

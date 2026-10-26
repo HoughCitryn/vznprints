@@ -25,7 +25,7 @@ export async function verifyTurnstile(token: string, ip?: string | null) {
 
   const response = await fetch(
     "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-    { method: "POST", body, cache: "no-store" },
+    { method: "POST", body, cache: "no-store", signal: AbortSignal.timeout(10_000) },
   );
   if (!response.ok) return false;
 

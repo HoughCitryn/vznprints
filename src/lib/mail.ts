@@ -28,6 +28,9 @@ export async function sendWebsiteEmail(message: WebsiteEmail): Promise<{ id: str
     }
     const secure = secureSetting ? secureSetting === "true" : port === 465;
     const from = requiredSmtpValue("SMTP_FROM_EMAIL");
+    // Accept the project's existing SMTP_API variable as a password alias.
+    const password = process.env.SMTP_PASS?.trim() ? process.env.SMTP_PASS : process.env.SMTP_API;
+    if (!password?.trim()) throw new Error("SMTP_PASS (or SMTP_API) is not configured.");
     const transport = nodemailer.createTransport({
       host: requiredSmtpValue("SMTP_HOST").trim(),
       port,
@@ -35,7 +38,7 @@ export async function sendWebsiteEmail(message: WebsiteEmail): Promise<{ id: str
       requireTLS: !secure,
       auth: {
         user: requiredSmtpValue("SMTP_USER"),
-        pass: requiredSmtpValue("SMTP_PASS"),
+        pass: password,
       },
       connectionTimeout: 10_000,
       greetingTimeout: 10_000,

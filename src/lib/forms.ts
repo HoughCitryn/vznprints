@@ -8,7 +8,7 @@ const phone = z
   .max(30, "Enter a valid phone number.");
 
 const email = z.string().trim().email("Enter a valid email address.").max(254);
-const turnstileToken = z.string().trim().min(1, "Please complete the security check.");
+const turnstileToken = z.string().trim().min(1, "Please complete the security check.").max(2048);
 const honeypot = z.string().max(200).optional().default("");
 
 export const contactSchema = z.object({

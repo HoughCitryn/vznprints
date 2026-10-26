@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type TurnstileProps = {
   onChange: (token: string) => void;
@@ -12,7 +12,7 @@ export function Turnstile({ onChange }: TurnstileProps) {
   const widgetId = useRef<string | null>(null);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-  const renderWidget = () => {
+  const renderWidget = useCallback(() => {
     if (!siteKey || !container.current || !window.turnstile || widgetId.current) return;
     widgetId.current = window.turnstile.render(container.current, {
       sitekey: siteKey,
@@ -21,17 +21,21 @@ export function Turnstile({ onChange }: TurnstileProps) {
       "error-callback": () => onChange(""),
       theme: "light",
     });
-  };
-
-  useEffect(() => {
-    if (!siteKey) onChange("development-bypass");
-    return () => {
-      if (widgetId.current && window.turnstile) window.turnstile.remove(widgetId.current);
-    };
   }, [onChange, siteKey]);
 
+  useEffect(() => {
+    if (!siteKey && process.env.NODE_ENV === "development") onChange("development-bypass");
+    renderWidget();
+    return () => {
+      if (widgetId.current && window.turnstile) window.turnstile.remove(widgetId.current);
+      widgetId.current = null;
+    };
+  }, [onChange, siteKey, renderWidget]);
+
   if (!siteKey) {
-    return <p className="form-note">Security verification is enabled in production.</p>;
+    return <p className="form-note">{process.env.NODE_ENV === "development"
+      ? "Local development: security verification is bypassed."
+      : "The form is temporarily unavailable. Please call 661-546-3113 or email contact@vznprints.com."}</p>;
   }
 
   return (

@@ -17,7 +17,7 @@ const message = { replyTo: "customer@example.com", subject: "Print enquiry", htm
 describe("website email delivery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    for (const name of ["SMTP_HOST", "SMTP_PORT", "SMTP_SECURE", "SMTP_USER", "SMTP_PASS", "SMTP_FROM_EMAIL", "CONTACT_TO_EMAIL", "RESEND_API_KEY", "RESEND_FROM_EMAIL"]) {
+    for (const name of ["SMTP_HOST", "SMTP_PORT", "SMTP_SECURE", "SMTP_USER", "SMTP_PASS", "SMTP_API", "SMTP_FROM_EMAIL", "CONTACT_TO_EMAIL", "RESEND_API_KEY", "RESEND_FROM_EMAIL"]) {
       vi.stubEnv(name, "");
     }
     createTransport.mockReturnValue({ sendMail });
@@ -51,6 +51,25 @@ describe("website email delivery", () => {
     vi.stubEnv("SMTP_SECURE", "true");
     await sendWebsiteEmail(message);
     expect(createTransport).toHaveBeenCalledWith(expect.objectContaining({ port: 465, secure: true, requireTLS: false }));
+  });
+
+  it("accepts SMTP_API as the provider's password alias", async () => {
+    configureSmtp();
+    vi.stubEnv("SMTP_PASS", "");
+    vi.stubEnv("SMTP_API", "provider-password");
+    await sendWebsiteEmail(message);
+    expect(createTransport).toHaveBeenCalledWith(expect.objectContaining({
+      auth: { user: "username", pass: "provider-password" },
+    }));
+  });
+
+  it("prefers SMTP_PASS when both password variables are set", async () => {
+    configureSmtp();
+    vi.stubEnv("SMTP_API", "older-password");
+    await sendWebsiteEmail(message);
+    expect(createTransport).toHaveBeenCalledWith(expect.objectContaining({
+      auth: { user: "username", pass: "password" },
+    }));
   });
 
   it("prefers SMTP when both providers are configured", async () => {
