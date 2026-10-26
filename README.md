@@ -116,7 +116,7 @@ Pre-deployment audit on October 26, 2026 passed from a fresh temporary copy with
 
 Published the verified application from commit `a8421f7` to the **Citryn Marketing's projects** team. The production build is Ready and publicly serves [vznprints.vercel.app](https://vznprints.vercel.app). [Deployment details](https://vercel.com/citryn-marketings-projects/vznprints/qYMBPJjCkQBa7MSbUjUsZmToiXaL). All ten production environment variables are configured; the API key and Turnstile secret are stored as secrets. Google Analytics remains disabled. The full route/SEO audit also passed against the public deployment.
 
-Both `vznprints.com` and `www.vznprints.com` are attached to the project. DNS still points to the previous Bluehost server (`162.241.134.16`), so the custom-domain cutover is pending. Vercel currently requests these website records in the existing Bluehost DNS zone:
+Both `vznprints.com` and `www.vznprints.com` are attached to the project. The website records were updated in Bluehost on October 26, 2026, and Vercel verified both hostnames as configured correctly:
 
 | Type | Name | Value |
 | --- | --- | --- |
@@ -124,7 +124,9 @@ Both `vznprints.com` and `www.vznprints.com` are attached to the project. DNS st
 | A | `@` | `216.150.16.1` |
 | CNAME | `www` | `0adb0bcc2c78806d.vercel-dns-016.com` |
 
-Replace conflicting website A/CNAME records, while preserving Bluehost nameservers, Google Workspace MX records, and unrelated TXT/mail records. Re-check the current recommended records in [Vercel Domains](https://vercel.com/citryn-marketings-projects/vznprints/settings/domains) before changing DNS. Turnstile is authorized for the custom domain; the temporary `vercel.app` hostname needs separate widget authorization for successful form submissions.
+The old website address (`162.241.134.16`) was replaced. Bluehost nameservers, Google Workspace MX records, apex TXT records, and the mail host were checked against the saved pre-cutover DNS records and remain unchanged. An automatically renewing certificate covers both hostnames. Requests to Vercel using the real domain and normal TLS validation passed: HTTP/`www` redirect to `https://vznprints.com/`, home and contact pages, robots.txt, sitemap.xml, and image-sitemap.xml return 200, and both form APIs reject empty submissions with 400. No additional email was sent. DNS caches still returned the old server during the final check; allow the previous four-hour TTL to expire before judging propagation from a particular connection.
+
+Turnstile is authorized for the custom domain; a successful browser challenge and full production email submission have not been re-tested during this DNS cutover. The temporary `vercel.app` hostname needs separate widget authorization for successful form submissions. Current domain status is available in [Vercel Domains](https://vercel.com/citryn-marketings-projects/vznprints/settings/domains).
 
 GitHub automatic deployments are not connected: Vercel rejected access to `HoughCitryn/vznprints`, although the source changes were pushed successfully. This release used the Vercel CLI. Once the Vercel GitHub integration has access to that repository, run `pnpm dlx vercel git connect --yes --scope citryn-marketings-projects`. Until then, publish new releases with `pnpm dlx vercel deploy --prod --scope citryn-marketings-projects`.
 
@@ -134,7 +136,7 @@ GitHub automatic deployments are not connected: Vercel rejected access to `Hough
 - Created the **VZN Prints** Turnstile widget in the existing Cloudflare account, using Managed mode and the `vznprints.com` hostname (which includes its subdomains). Production `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are stored in ignored `.env.local`. Add these same values to the hosting environment before rebuilding and deploying. Local development uses Cloudflare's official public test keys in ignored `.env.development.local`; do not copy that file's values into production. The real secret was checked against Siteverify with an intentionally invalid response token: the endpoint returned `invalid-input-response`, not an invalid-secret error. A real successful production challenge still needs verification on the deployed domain.
 - Google Analytics remains disabled, as requested. No GA4 property was created.
 - Added and verified the `https://vznprints.com/` Search Console property under the existing Citryn Marketing owner account. Retained the old HTTP property and existing public HTML verification token. Submitted `https://vznprints.com/sitemap.xml`; Search Console reported “Sitemap index processed successfully.” Indexing and performance data require subsequent Google processing.
-- The live domain still serves the old WordPress site. Its sitemap index includes its image sitemap. The rebuilt `/image-sitemap.xml` endpoint must be submitted only after deployment; it currently returns 404 on the old site.
+- At this October 22 check, the live domain served the old WordPress site. The rebuilt `/image-sitemap.xml` now returns 200 from Vercel; its separate Search Console submission remains a follow-up after DNS propagation.
 - Local checks passed: 38 tests, TypeScript, production build, and the HTTP SEO audit covering 10 routes, 38 archived assets, and 45 redirects. ESLint reports one existing unused-disable warning in `opengraph-image.tsx`. Form tests use mocked mail delivery; production requests reject the development CAPTCHA bypass.
 
 ## SMTP.com API correction — 2026-10-26
